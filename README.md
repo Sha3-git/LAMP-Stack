@@ -315,7 +315,7 @@ cd ../private
 wget gelowitz.org/privkey1.pem
 ```
 ```
-cd /etc/httmp/conf.d
+cd /etc/httpd/conf.d
 ```
 ```
 emacs ssl.conf
@@ -333,6 +333,28 @@ SSLCertificateKeyFile /etc/pki/tls/private/privkey1.pem
 ```
 ```
 systemctl restart httpd
+```
+## Dovecot and Postfix
+```
+cd /etc/httpd/conf.d
+```
+```
+emacs ssl.conf
+```
+add to the bottom
+```
+<VirtualHost *:443>
+         DocumentRoot "/var/www/html"
+         ServerName "dabiris.ursse.org"
+</VirtualHost>
+<VirtualHost *:443>
+         DocumentRoot "/var/www/html/mywww"
+         ServerName "dabiris.ursse.org"
+</VirtualHost>
+<VirtualHost *:443>
+    DocumentRoot "/var/www/roundcube"
+    ServerName "mail.dabiris.ursse.org"
+</VirtualHost>
 ```
 
 
