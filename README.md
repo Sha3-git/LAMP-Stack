@@ -356,7 +356,58 @@ add to the bottom
     ServerName "mail.dabiris.ursse.org"
 </VirtualHost>
 ```
+```
+systemctl restart httpd
+```
+```
+systemctl restart named
+```
+```
+systemctl enable named
+```
+```
+cd /etc/httpd/conf
+```
+```
+emacs httpd.conf
+```
+```
+<VirtualHost *:80>
+           DocumentRoot "/var/www/html"
+           ServerName "dabiris.ursse.org"
+           Redirect permanent / https://dabiris.ursse.org
+</VirtualHost>
+<VirtualHost *:80>
+           DocumentRoot "/var/www/html/mywww"
+           ServerName "www.dabiris.ursse.org"
+           Redirect permanent / https://www.dabiris.ursse.org
+</VirtualHost>
+<VirtualHost *:80>
+           DocumentRoot "/var/www/roundcube"
+           ServerName "mail.dabiris.ursse.org"
+           Redirect permanent / https://mail.dabiris.ursse.org
+</VirtualHost>
+```
+```
+systemctl restart httpd
+```
+```
+cd /var/named
+```
+```
+emacs dabiris.ursse.org
+```
+change the ttl (time to live) and minimum ttl to 600 so that the dns server will refresh the changes to our zone file faster.
 
+MX append mail. which is what we will be configuring it to
+
+at the bottom of the file add your domain
+```
+dabiris.ursse.org    IN   TXT  "v=spf1 mx ~all"
+```
+```
+systemctl restart named
+```
 
 
 
