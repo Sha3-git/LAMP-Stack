@@ -77,6 +77,10 @@ cd /etc/ssh/
 ```
 emacs sshd_config
 ```
+uncomment remove (#) change from Port 22 to Port 44444
+
+Permanently make port 44444 our public port.
+
 ```
 firewall-cmd --zone=public --permanent --add-port=44444/tcp
 ```
@@ -107,6 +111,7 @@ cd /etc
 ```
 emacs php.ini
 ```
+Then edit line 503 errors to ON
 ```
 systemctl restart php-fpm
 ```
@@ -201,6 +206,7 @@ generate blowfish https://phpsolved.com/?s=blowfish&submit=Search
 ```
 emacs config.inc.php
 ```
+edit the blowfish secret with the generated key
 ![image](https://github.com/user-attachments/assets/3d7da35d-3a21-4291-a315-e76ac605a24e)
 
 Create a temp file in /var/www/html/phpmyadmin
@@ -227,8 +233,107 @@ cd /etc
 ```
 emacs named.conf
 ```
+change the options listen-on to {any;}
 
+change listen-on-v6 to {any;}
 
+change allow-query {any;}
+
+allow-recursion {127.0.0.1; ::1;);
+```
+zone "dabiris.ursse.org" IN {
+ type master;
+ file "dabiris.ursse.org";
+ allow-update { none; };
+};
+```
+```
+cd ~
+```
+```
+wget gelowitz.org/lab.txt
+```
+```
+cp lab.txt /var/named
+```
+rename it to our domain name (dabiris.ursse.org)
+```
+emacs dabiris.ursse.org
+```
+emacs the file and then change all the labtest to the domain name (dabiris.ursse.org)
+
+change the @ (top level domain) to our IP 15.157.30.122, as well as WWW and mail.
+
+![image](https://github.com/user-attachments/assets/51ebb4fb-ff50-479a-984a-2e46329c1e8f)
+```
+firewall-cmd --zone=public --permanent --add-service=dns
+```
+```
+firewall-cmd --reload
+```
+```
+dnf install epel-release
+```
+enable reccomended crb
+```
+cd /etc/httpd
+```
+```
+cd conf
+```
+```
+emacs httpd.conf
+```
+beneath Listen 80 add virtual hosts telling apache where different domain name serve files from
+```
+<VirtualHost *:80>
+         DocumentRoot "/var/www/html"
+         ServeName "dabiris.ursse.org"
+</VirtualHost>
+<VirtualHost *:80>
+         DocumentRoot "/var/www/html/mywww"
+         ServerName "www.dabiris.ursse.org"
+</VirtualHost>
+<VirtualHost *:80>
+         DocumentRoot "/var/www/roundcube"
+         ServerName "mail.dabiris.ursse.org"
+</VirtualHost>
+```
+```
+systemctl restart httpd
+```
+```
+cd /etc/pki/tls/certs/
+```
+```
+wget gelowitz.org/fullchain1.pem
+```
+```
+cd ../private
+```
+```
+wget gelowitz.org/privkey1.pem
+```
+```
+cd /etc/httmp/conf.d
+```
+```
+emacs ssl.conf
+```
+replace our my.key and my.csr
+```
+SSLCertificateFile /etc/pki/tls/certs/fullchain1.pem
+ Server Private Key:
+ If the key is not combined with the certificate, use this
+ directive to point at the key file.  Keep in mind that if
+ you've both a RSA and a DSA private key you can configure
+ both in parallel (to also allow the use of DSA ciphers, etc.)
+ ECC keys, when in use, can also be configured in parallel
+SSLCertificateKeyFile /etc/pki/tls/private/privkey1.pem
+```
+```
+systemctl restart httpd
+```
 
 
 
